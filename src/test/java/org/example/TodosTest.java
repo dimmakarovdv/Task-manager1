@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 public class TodosTest {
     @Test
-    public void shouldAddThreeTasksOfDifferentType() {
+    void shouldAddThreeTasksOfDifferentType() {
         SimpleTask simpleTask = new SimpleTask(5, "Позвонить родителям");
         String[] subtasks = {"Молоко", "Яйца", "Хлеб"};
         Epic epic = new Epic(55, subtasks);
@@ -27,7 +27,7 @@ public class TodosTest {
     }
 
     @Test
-    public void testSearchWhenFewTasksMatch() {
+    void testSearchWhenFewTasksMatch() {
         SimpleTask simpleTask = new SimpleTask(1, "Купить Хлеб");
         String[] subtasks = {"Молоко", "Яйца", "Хлеб"};
         Epic epic = new Epic(2, subtasks);
@@ -44,7 +44,7 @@ public class TodosTest {
     }
 
     @Test
-    public void testSearchWhenNoMatches() {
+    void testSearchWhenNoMatches() {
         SimpleTask simpleTask = new SimpleTask(1, "Купить Хлеб");
         String[] subtasks = {"Молоко", "Яйца", "Хлеб"};
         Epic epic = new Epic(2, subtasks);
@@ -61,10 +61,44 @@ public class TodosTest {
     }
 
     @Test
-    public void testSearchInEmptyManager() {
+    void testSearchInEmptyManager() {
         Todos todos = new Todos();
         Task[] expected = {};
         Task[] actual = todos.search("Запрос");
+        Assertions.assertArrayEquals(expected, actual);
+    }
+    @Test
+    void testSearchWithEmptyQuery() {
+        SimpleTask simpleTask = new SimpleTask(1, "Купить Хлеб");
+        Todos todos = new Todos();
+        todos.add(simpleTask);
+
+        Task[] expected = {};
+        Task[] actual = todos.search("");
+        Assertions.assertArrayEquals(expected, actual);
+    }
+
+    @Test
+    void testSearchWithNullQuery() {
+        SimpleTask simpleTask = new SimpleTask(1, "Купить Хлеб");
+        Todos todos = new Todos();
+        todos.add(simpleTask);
+
+        Task[] expected = {};
+        Task[] actual = todos.search(null);
+        Assertions.assertArrayEquals(expected, actual);
+    }
+
+    @Test
+    void testSearchWithSingleMatch() {
+        SimpleTask task1 = new SimpleTask(1, "Купить Хлеб");
+        SimpleTask task2 = new SimpleTask(2, "Купить Молоко");
+        Todos todos = new Todos();
+        todos.add(task1);
+        todos.add(task2);
+
+        Task[] expected = {task2};
+        Task[] actual = todos.search("Молоко");
         Assertions.assertArrayEquals(expected, actual);
     }
 }

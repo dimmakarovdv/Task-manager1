@@ -1,9 +1,9 @@
 package org.example;
 
 public class Meeting extends Task {
-    protected String topic;
-    protected String project;
-    protected String start;
+    private String topic;
+    private String project;
+    private String start;
 
     public Meeting(int id, String topic, String project, String start) {
         super(id);
@@ -29,6 +29,8 @@ public class Meeting extends Task {
         if (query == null || query.isEmpty()) {
             return false;
         }
-        return topic.contains(query) || project.contains(query);
+        boolean topicMatch = topic != null && topic.contains(query);
+        boolean projectMatch = project != null && project.contains(query);
+        return topicMatch || projectMatch;
     }
 }

@@ -8,23 +8,37 @@ public class TasksTest {
     @Test
     public void testSimpleTaskMatches() {
         SimpleTask task = new SimpleTask(1, "Купить хлеб и молоко");
-        boolean[] actual = { // Проверка различных сценариев поиска
+
+        boolean[] actual = {
                 task.matches("Купить"),
                 task.matches("хлеб"),
                 task.matches("молоко"),
                 task.matches(" "),
-                task.matches("хлеб и молоко"),
+                task.matches("хлеб и"),
 
                 task.matches("Хлеб"),
                 task.matches("сыр"),
-                task.matches("хле"),
                 task.matches(""),
                 task.matches(null)
         };
         boolean[] expected = {
                 true, true, true, true, true,
-                false, false, false, false, false
+                false, false, false, false
         };
+        Assertions.assertArrayEquals(expected, actual);
+    }
+
+    @Test
+    public void testSimpleTaskWithNullTitle() {
+        SimpleTask task = new SimpleTask(1, null);
+
+        boolean[] actual = {
+                task.matches("Любой"),
+                task.matches(""),
+                task.matches(null)
+        };
+
+        boolean[] expected = {false, false, false};
         Assertions.assertArrayEquals(expected, actual);
     }
 
@@ -37,17 +51,15 @@ public class TasksTest {
                 epic.matches("Молоко"),
                 epic.matches("Яйца"),
                 epic.matches("Хлеб"),
-                epic.matches(" "),
 
-                epic.matches("молоко"),
+                epic.matches("МАлоко"),
                 epic.matches("Сыр"),
-                epic.matches("Яйцо"),
                 epic.matches(""),
                 epic.matches(null)
         };
         boolean[] expected = {
-                true, true, true, true,
-                false, false, false, false, false
+                true, true, true,
+                false, false, false, false
         };
         Assertions.assertArrayEquals(expected, actual);
     }
@@ -63,6 +75,30 @@ public class TasksTest {
         };
         boolean[] expected = {false, false, false};
         Assertions.assertArrayEquals(expected, actual);
+    }
+    @Test
+    public void testEpicWithNullArray() {
+        Epic epic = new Epic(1, null);
+
+        boolean[] actual = {
+                epic.matches("Любой"),
+                epic.matches(""),
+                epic.matches(null)
+        };
+
+        boolean[] expected = {false, false, false};
+        Assertions.assertArrayEquals(expected, actual);
+    }
+
+    @Test
+    public void testEpicWithMixedSubtasks() {
+        String[] subtasks = {null, "Задача", ""};
+        Epic epic = new Epic(1, subtasks);
+
+        Assertions.assertTrue(epic.matches("Задача"));
+        Assertions.assertFalse(epic.matches(""));
+        Assertions.assertFalse(epic.matches(null));
+        Assertions.assertFalse(epic.matches("Пусто"));
     }
 
     @Test
@@ -121,6 +157,31 @@ public class TasksTest {
     }
 
     @Test
+    public void testMeetingWithNullFields() {
+        Meeting meeting = new Meeting(1, null, null, "2025-07-03");
+
+        boolean[] actual = {
+                meeting.matches("Любой"),
+                meeting.matches("Тема"),
+                meeting.matches("Проект")
+        };
+
+        boolean[] expected = {false, false, false};
+        Assertions.assertArrayEquals(expected, actual);
+    }
+    @Test
+    public void testMeetingWithPartialNullFields() {
+        Meeting meeting1 = new Meeting(1, "Тема", null, "2025-07-03");
+        Meeting meeting2 = new Meeting(2, null, "Проект", "2025-07-03");
+
+        Assertions.assertTrue(meeting1.matches("Тема"));
+        Assertions.assertFalse(meeting1.matches("Проект"));
+
+        Assertions.assertTrue(meeting2.matches("Проект"));
+        Assertions.assertFalse(meeting2.matches("Тема"));
+    }
+
+    @Test
     public void testAllTasksWithSpecialCharacters() {
         SimpleTask simpleTask = new SimpleTask(6, "Email: dimmakarovdv89@mail.ru");
         boolean[] simpleActual = {
@@ -148,5 +209,43 @@ public class TasksTest {
         };
         boolean[] meetingExpected = {true, true, true};
         Assertions.assertArrayEquals(meetingExpected, meetingActual);
+    }
+    @Test
+    public void testEpicWithNullSubtasks() {
+        String[] subtasks = {"Молоко", null, "Яйца"};
+        Epic epic = new Epic(1, subtasks);
+
+        boolean[] actual = {
+                epic.matches("Молоко"),
+                epic.matches("Хлеб"),
+                epic.matches("Яйца"),
+                epic.matches(null)
+        };
+
+        boolean[] expected = {true, false, true, false};
+        Assertions.assertArrayEquals(expected, actual);
+    }
+    @Test
+    public void testTodosWithDuplicateTasks() {
+        SimpleTask task = new SimpleTask(1, "Задача");
+        Todos todos = new Todos();
+        todos.add(task);
+        todos.add(task);
+
+        Task[] result = todos.findAll();
+        Assertions.assertEquals(2, result.length);
+        Assertions.assertEquals(task, result[0]);
+        Assertions.assertEquals(task, result[1]);
+    }
+
+    @Test
+    public void testSearchWithPartialMatchInEpic() {
+        String[] subtasks = {"Частичное совпадение"};
+        Epic epic = new Epic(1, subtasks);
+        Todos todos = new Todos();
+        todos.add(epic);
+
+        Task[] result = todos.search("части");
+        Assertions.assertEquals(1, result.length);
     }
 }

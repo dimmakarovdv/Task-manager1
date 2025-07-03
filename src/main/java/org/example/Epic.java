@@ -1,11 +1,11 @@
 package org.example;
 
 public class Epic extends Task {
-    protected String[] subtasks; // Исправлено: массив строк вместо строки
+    private String[] subtasks;
 
     public Epic(int id, String[] subtasks) {
         super(id);
-        this.subtasks = subtasks;
+        this.subtasks = subtasks != null ? subtasks : new String[0];
     }
 
     public String[] getSubtasks() { // Тип возвращаемого значения исправлен
@@ -14,9 +14,12 @@ public class Epic extends Task {
 
     @Override
     public boolean matches(String query) {
-        if (subtasks == null) return false;
+        if (query == null || query.isEmpty()) {
+            return false;
+        }
+        String lowerQuery = query.toLowerCase();
         for (String subtask : subtasks) {
-            if (subtask != null && subtask.contains(query)) {
+            if (subtask != null && subtask.toLowerCase().contains(lowerQuery)) {
                 return true;
             }
         }

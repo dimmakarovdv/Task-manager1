@@ -4,8 +4,8 @@ public class SimpleTask extends Task {
     protected String title;
 
     public SimpleTask(int id, String title) {
-        super(id); // вызов родительского конструктора
-        this.title = title; // заполнение своих полей
+        super(id);
+        this.title = title;
     }
 
     public String getTitle() {
@@ -17,6 +17,6 @@ public class SimpleTask extends Task {
         if (query == null || query.isEmpty()) {
             return false;
         }
-        return title.contains(query);
+        return title != null && title.contains(query);
     }
 }
