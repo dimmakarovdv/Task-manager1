@@ -248,4 +248,60 @@ public class TasksTest {
         Task[] result = todos.search("части");
         Assertions.assertEquals(1, result.length);
     }
+
+    @Test
+    public void testSearchReturnsMultipleTasks() {
+        // Создаем задачи
+        SimpleTask task1 = new SimpleTask(1, "Купить молоко и хлеб");
+        Epic task2 = new Epic(2, new String[]{"Молоко", "хлеб"});
+        Meeting task3 = new Meeting(3, "Обсуждение хлеба", "Продукты", "13:00");
+
+        // Создаем менеджер и добавляем задачи
+        Todos todos = new Todos();
+        todos.add(task1);
+        todos.add(task2);
+        todos.add(task3);
+
+        // Ищем по запросу
+        Task[] result = todos.search("хлеб");
+
+        // Проверяем результаты
+        Assertions.assertEquals(3, result.length, "Должны найти 3 задачи");
+        Assertions.assertArrayEquals(new Task[]{task1, task2, task3}, result);
+    }
+
+    @Test
+    public void testSearchReturnsSingleTask() {
+
+        SimpleTask task1 = new SimpleTask(1, "Купить хлеб");
+        Epic task2 = new Epic(2, new String[]{"Молоко", "сметана"});
+        Meeting task3 = new Meeting(3, "Обсуждение хлеба", "Проект", "13:00");
+
+        Todos todos = new Todos();
+        todos.add(task1);
+        todos.add(task2);
+        todos.add(task3);
+
+        Task[] result = todos.search("сметана");
+
+        Assertions.assertEquals(1, result.length, "Должна найтись 1 задача");
+        Assertions.assertEquals(task2, result[0]);
+    }
+
+    @Test
+    public void testSearchReturnsNoTasks() {
+        // Создаем задачи
+        SimpleTask task1 = new SimpleTask(1, "Купить хлеб");
+        Epic task2 = new Epic(2, new String[]{"Молоко", "хлеб"});
+        Meeting task3 = new Meeting(3, "Совещание хлеба", "Проект", "13:00");
+
+        Todos todos = new Todos();
+        todos.add(task1);
+        todos.add(task2);
+        todos.add(task3);
+
+        Task[] result = todos.search("сыр");
+
+        Assertions.assertEquals(0, result.length, "Не должно быть найденных задач");
+    }
 }
